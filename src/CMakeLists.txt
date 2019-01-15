@@ -1,5 +1,5 @@
 # set source files
-set(src DisjointSets.cc
+set(source DisjointSets.cc
       Edge.cc
       FloatImage.cc
       GrayModel.cc
@@ -13,4 +13,4 @@ set(src DisjointSets.cc
     )
 
 # configure config.hpp.in
-configure_file("config.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/config_impl.hpp")
+# configure_file("config.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/config_impl.hpp")

@@ -43,40 +43,18 @@ if(USE_ROS)
   install(DIRECTORY include/${PROJECT_NAME}/
           DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 else()
-  set(header_path "${PROJECT_SOURCE_DIR}/include/apriltag_mit")
   message(STATUS "Source:  " ${PROJECT_SOURCE_DIR})
-  message(STATUS "Header:  " ${header_path})
   message(STATUS "Binary:  " ${PROJECT_BINARY_DIR})
 
   #add subdirectories
-  add_subdirectory(src)
-
-  # set headers
-  set(header ${header_path}/apriltag_mit.h
-		   ${header_path}/Apriltags/DisjointSets.h
-		   ${header_path}/Apriltags/Edge.h
-       ${header_path}/Apriltags/FloatImage.h
-       ${header_path}/Apriltags/GrayModel.h
-       ${header_path}/Apriltags/Gridder.h
-       ${header_path}/Apriltags/Line2D.h
-       ${header_path}/Apriltags/LineSegment2D.h
-       ${header_path}/Apriltags/MathUtil.h
-       ${header_path}/Apriltags/Quad.h
-       ${header_path}/Apriltags/Segment.h
-       ${header_path}/Apriltags/Tag16h5.h
-       ${header_path}/Apriltags/Tag25h9.h
-       ${header_path}/Apriltags/Tag36h11.h
-       ${header_path}/Apriltags/tagCodes.h
-       ${header_path}/Apriltags/TagDetection.h
-       ${header_path}/Apriltags/TagDetector.h
-       ${header_path}/Apriltags/TagFamily.h
-       ${header_path}/Apriltags/timer.h
-       )
-
+  add_subdirectory(include)
   
   # define library target
   #add_library(apriltag_mit ${header})
-  target_include_directories(apriltag_mit PUBLIC ${PROJECT_SOURCE_DIR}/include)
+  file(GLOB CC_FILES ${PROJECT_SOURCE_DIR}/src/*.cc)
+  add_library(${PROJECT_NAME} SHARED ${CC_FILES} ${header})
+  target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
+  #target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)  #throws an error
 
   set(header_path "${PROJECT_SOURCE_DIR}/include/apriltag_mit")
 	set(CMAKE_INSTALL_PREFIX /usr/local)
@@ -85,17 +63,12 @@ else()
 	message(STATUS "Library: " ${LIBRARY_OUTPUT_PATH})
   link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-  file(GLOB CC_FILES ${PROJECT_SOURCE_DIR}/src/*.cc)
-  add_library(${PROJECT_NAME} SHARED ${CC_FILES} ${header})
-  target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
-
   set(include_dest "include/${PROJECT_NAME}")
   set(main_lib_dest "lib/${PROJECT_NAME}")
   
   install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} DESTINATION "${main_lib_dest}")
   install(FILES ${header} DESTINATION "${include_dest}")
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config_impl.hpp DESTINATION "${include_dest}")
-  install(FILES my_library-config.cmake DESTINATION ${main_lib_dest})
-  install(EXPORT my_library DESTINATION "${main_lib_dest}")
+  install(FILES apriltag_mit-config.cmake DESTINATION ${main_lib_dest})
+  install(EXPORT ${PROJECT_NAME} DESTINATION "${main_lib_dest}")
 
 endif()
