@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(apriltag_mit)
 
-set(USE_ROS FALSE)
+OPTION(USE_ROS "build with ROS" FALSE)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Eigen3 REQUIRED)
@@ -43,28 +43,33 @@ if(USE_ROS)
   install(DIRECTORY include/${PROJECT_NAME}/
           DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 else()
+  #set some variables
+  #set(CMAKE_INSTALL_PREFIX /usr/local) #PREFIX should be initialized by user or OS (e.g. cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..)
+  set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+  set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib) #do we need this ?
+  set(include_dest "include/${PROJECT_NAME}")
+  set(main_lib_dest "lib/${PROJECT_NAME}")
+
+  #some messages to check what is going on
   message(STATUS "Source:  " ${PROJECT_SOURCE_DIR})
   message(STATUS "Binary:  " ${PROJECT_BINARY_DIR})
+  message(STATUS "Library: " ${LIBRARY_OUTPUT_PATH})
+  message("headers will be installed in: " ${CMAKE_INSTALL_PREFIX}/${include_dest})
+  message("Library will be installed in: " ${CMAKE_INSTALL_PREFIX}/${main_lib_dest})
 
   #add subdirectories
   add_subdirectory(include)
+  #add_subdirectory(src)
   
   # define library target
   #add_library(apriltag_mit ${header})
   file(GLOB CC_FILES ${PROJECT_SOURCE_DIR}/src/*.cc)
+  
   add_library(${PROJECT_NAME} SHARED ${CC_FILES} ${header})
+  #add_library(${PROJECT_NAME} SHARED ${source} ${header})
+  
   target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
-  #target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)  #throws an error
-
-  set(header_path "${PROJECT_SOURCE_DIR}/include/apriltag_mit")
-	set(CMAKE_INSTALL_PREFIX /usr/local)
-  set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-  set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-	message(STATUS "Library: " ${LIBRARY_OUTPUT_PATH})
-  link_directories(${PROJECT_SOURCE_DIR}/lib)
-
-  set(include_dest "include/${PROJECT_NAME}")
-  set(main_lib_dest "lib/${PROJECT_NAME}")
+  link_directories(${PROJECT_SOURCE_DIR}/lib) # change directory to ${CMAKE_INSTALL_PREFIX}/${main_lib_dest} ?
   
   install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} DESTINATION "${main_lib_dest}")
   install(FILES ${header} DESTINATION "${include_dest}")

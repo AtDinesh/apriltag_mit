@@ -1,5 +1,7 @@
+message(STATUS "src folder, current dir:  " ${CMAKE_CURRENT_BINARY_DIR})
+
 # set source files
-set(source DisjointSets.cc
+set(src DisjointSets.cc
       Edge.cc
       FloatImage.cc
       GrayModel.cc

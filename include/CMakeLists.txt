@@ -1,5 +1,3 @@
-
-
 message(STATUS "hdr subfolder, current dir:  " ${CMAKE_CURRENT_BINARY_DIR})
 
 set(header_path "${CMAKE_CURRENT_BINARY_DIR}/apriltag_mit")
